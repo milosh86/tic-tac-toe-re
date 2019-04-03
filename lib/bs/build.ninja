@@ -1,0 +1,68 @@
+bs_package_flags = -bs-package-name reason-scripts
+src_root_dir = /Users/milos/Desktop/test/reason-tto
+bsc = /Users/milos/Desktop/test/reason-tto/node_modules/bs-platform/lib/bsc.exe
+bsdep = /Users/milos/Desktop/test/reason-tto/node_modules/bs-platform/lib/bsb_helper.exe
+warnings = -w -30-40+6+7+27+32..39+44+45+101
+bsc_flags = -bs-suffix -nostdlib -I '/Users/milos/Desktop/test/reason-tto/node_modules/bs-platform/lib/ocaml' -color always
+ppx_flags = 
+bs_package_includes = -I /Users/milos/Desktop/test/reason-tto/node_modules/reason-react/lib/ocaml -I /Users/milos/Desktop/test/reason-tto/node_modules/@glennsl/bs-jest/lib/ocaml -I /Users/milos/Desktop/test/reason-tto/node_modules/bs-fetch/lib/ocaml
+bs_package_dev_includes = 
+namespace = 
+bsb_dir_group = 0
+refmt = /Users/milos/Desktop/test/reason-tto/node_modules/bs-platform/lib/refmt.exe
+reason_react_jsx = -ppx '/Users/milos/Desktop/test/reason-tto/node_modules/bs-platform/lib/reactjs_jsx_ppx_2.exe'
+refmt_flags = --print binary
+bsc_lib_includes = -I src
+rule build_ast_and_module_sets_from_re
+  command = ${bsc} -pp "${refmt} ${refmt_flags}" ${reason_react_jsx}  ${ppx_flags} ${warnings} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}
+  description = [34mBuilding[39m [2m${out}[22m
+build src/app.mlast : build_ast_and_module_sets_from_re $src_root_dir/src/app.re
+rule build_deps
+  command = ${bsdep} ${namespace} -g ${bsb_dir_group} -MD ${in}
+  restat = 1
+  description = [34mBuilding[39m [2m${out}[22m
+build src/app.mlast.d : build_deps src/app.mlast
+rule build_cmj_cmi
+  command = ${bsc} ${bs_package_flags} -bs-assume-no-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} -o ${out} -c  ${in} $postbuild
+  depfile = ${in}.d
+  restat = 1
+  description = [34mBuilding[39m [2m${out}[22m
+build src/app.cmj |  $src_root_dir/src/app.bs.js src/app.cmi : build_cmj_cmi src/app.mlast
+  bsc_flags = $bsc_flags -bs-re-out -bs-super-errors
+  bs_package_flags = $bs_package_flags  -bs-package-output commonjs:src
+build src/Game.mlast : build_ast_and_module_sets_from_re $src_root_dir/src/Game.re
+build src/Game.mlast.d : build_deps src/Game.mlast
+build src/Game.cmj |  $src_root_dir/src/Game.bs.js src/Game.cmi : build_cmj_cmi src/Game.mlast
+  bsc_flags = $bsc_flags -bs-re-out -bs-super-errors
+  bs_package_flags = $bs_package_flags  -bs-package-output commonjs:src
+build src/Board.mlast : build_ast_and_module_sets_from_re $src_root_dir/src/Board.re
+build src/Board.mlast.d : build_deps src/Board.mlast
+build src/Board.cmj |  $src_root_dir/src/Board.bs.js src/Board.cmi : build_cmj_cmi src/Board.mlast
+  bsc_flags = $bsc_flags -bs-re-out -bs-super-errors
+  bs_package_flags = $bs_package_flags  -bs-package-output commonjs:src
+build src/index.mlast : build_ast_and_module_sets_from_re $src_root_dir/src/index.re
+build src/index.mlast.d : build_deps src/index.mlast
+build src/index.cmj |  $src_root_dir/src/index.bs.js src/index.cmi : build_cmj_cmi src/index.mlast
+  bsc_flags = $bsc_flags -bs-re-out -bs-super-errors
+  bs_package_flags = $bs_package_flags  -bs-package-output commonjs:src
+build src/Types.mlast : build_ast_and_module_sets_from_re $src_root_dir/src/Types.re
+build src/Types.mlast.d : build_deps src/Types.mlast
+build src/Types.cmj |  $src_root_dir/src/Types.bs.js src/Types.cmi : build_cmj_cmi src/Types.mlast
+  bsc_flags = $bsc_flags -bs-re-out -bs-super-errors
+  bs_package_flags = $bs_package_flags  -bs-package-output commonjs:src
+build src/Square.mlast : build_ast_and_module_sets_from_re $src_root_dir/src/Square.re
+build src/Square.mlast.d : build_deps src/Square.mlast
+build src/Square.cmj |  $src_root_dir/src/Square.bs.js src/Square.cmi : build_cmj_cmi src/Square.mlast
+  bsc_flags = $bsc_flags -bs-re-out -bs-super-errors
+  bs_package_flags = $bs_package_flags  -bs-package-output commonjs:src
+build src/app_test.mlast : build_ast_and_module_sets_from_re $src_root_dir/src/app_test.re
+build src/app_test.mlast.d : build_deps src/app_test.mlast
+build src/app_test.cmj |  $src_root_dir/src/app_test.bs.js src/app_test.cmi : build_cmj_cmi src/app_test.mlast
+  bsc_flags = $bsc_flags -bs-re-out -bs-super-errors
+  bs_package_flags = $bs_package_flags  -bs-package-output commonjs:src
+build src/BoardRow.mlast : build_ast_and_module_sets_from_re $src_root_dir/src/BoardRow.re
+build src/BoardRow.mlast.d : build_deps src/BoardRow.mlast
+build src/BoardRow.cmj |  $src_root_dir/src/BoardRow.bs.js src/BoardRow.cmi : build_cmj_cmi src/BoardRow.mlast
+  bsc_flags = $bsc_flags -bs-re-out -bs-super-errors
+  bs_package_flags = $bs_package_flags  -bs-package-output commonjs:src
+build build.ninja : phony  ||  src/BoardRow.mlast.d src/app_test.mlast.d src/Square.mlast.d src/Types.mlast.d src/index.mlast.d src/Board.mlast.d src/Game.mlast.d src/app.mlast.d
